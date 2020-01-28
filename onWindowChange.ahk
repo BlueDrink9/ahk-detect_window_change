@@ -27,10 +27,11 @@ class WindowChangeDetector {
 
     initMessageReceivedCallback(){
         ; Get the dynamic identifier for shell messages and assign our callback to handle these messages
-        static SHELL_MSG := DllCall("RegisterWindowMessage", "Str", "SHELLHOOK", "UInt")
-        func := this.ShellCallback
-        OnMessage(SHELL_MSG, Func(func))
-        this.debug("Registered message callback func '" . func . "'")
+        SHELL_MSG := DllCall("RegisterWindowMessage", "Str", "SHELLHOOK", "UInt")
+        this.debug("shellmsg " . SHELL_MSG)
+        callback := this.ShellCallback
+        OnMessage(SHELL_MSG, callback)
+        this.debug("Registered message callback func '" . callback . "'")
     }
 
     makeDebugGui(){
@@ -47,21 +48,25 @@ class WindowChangeDetector {
         this.debug("Registered shell hook for window handle '" . this.windowHandle . "'")
     }
     ; Shell messages callback. The params are defined by ahk/windows.
-    ShellCallback(wParam, lParam, msg, hwnd) {
-        HSHELL_WINDOWACTIVATED = 4, HSHELL_RUDEAPPACTIVATED = 0x8004
-        ; tooltip % wParam " " (wParam & 4)
-        ; msgbox % wParam " " (wParam & 4)
+    ShellCallback(wParam, lParam) {
+        ; According to the docs, these 4 params should work. In reality,
+        ; registering a function with more than 3 arguments with OnMessage
+        ; causes an error.
+        ; (wParam, lParam, msg, hwnd)
         this.debug("wParam: " wParam ",(wParam & 4): " (wParam & 4))
-        if (wParam & HSHELL_WINDOWACTIVATED) {
+
+        HSHELL_WINDOWACTIVATED = 4, HSHELL_RUDEAPPACTIVATED = 0x8004
+        isWindowChangeEvent := wParam & HSHELL_WINDOWACTIVATED
+        if (isWindowChangeEvent) {
             ; lParam = hWnd of activated window
             this.informCallbackOfWindowChange()
         }
     }
+
     informCallbackOfWindowChange(){
         func := this.callbackFunction
         this.debug("Active window changed. Running callback func '" . func . "'")
         %func%()
-        ; updateWorkraveState()
     }
 
     debug(msg){
