@@ -22,7 +22,6 @@ class WindowChangeDetector {
     initMessageAddress(){
         ; Sets hWnd
         Gui +HwndhWnd
-        msgbox %hWnd%
         ; A window handle is needed for sendmessage. Windows needs to a window
         ; to send message to, not just a process.
         this.windowHandle := hWnd
@@ -46,7 +45,7 @@ class WindowChangeDetector {
         ; HSHELL_WINDOWACTIVATED = 4, HSHELL_RUDEAPPACTIVATED = 0x8004
         ; tooltip % wParam " " (wParam & 4)
         ; msgbox % wParam " " (wParam & 4)
-        debugWindow.Println("wParam: " wParam ",(wParam & 4): " (wParam & 4))
+        this.debug("wParam: " wParam ",(wParam & 4): " (wParam & 4))
         if (wParam & 4) {
             ; lParam = hWnd of activated window
             this.informCallbackOfWindowChange()
@@ -54,7 +53,7 @@ class WindowChangeDetector {
     }
     informCallbackOfWindowChange(){
         func := this.callbackFunction
-        debugWindow.Println("Active window changed. Running callback func '%func%'")
+        this.debug("Active window changed. Running callback func '" . func . "'")
         %func%()
         ; updateWorkraveState()
     }
