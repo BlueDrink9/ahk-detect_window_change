@@ -12,7 +12,7 @@ class WindowChangeDetector {
 
         this.initMessageReceivedCallback()
 
-        this.SetHook()
+        this.registerShellHook()
 
         return this  ; This line can be omitted when using the 'new' operator.
     }
@@ -39,14 +39,14 @@ class WindowChangeDetector {
         this.debugWindow := new Debug_Gui
     }
 
-    ; Sets whether the shell hook is registered
-    SetHook() {
+    registerShellHook() {
         if (!DllCall("RegisterShellHookWindow", "Ptr", this.windowHandle)) {
             msgbox Failed to register shell hook for detecting window change
             return false
         }
         this.debug("Registered shell hook for window handle '" . this.windowHandle . "'")
     }
+
     ; Shell messages callback. The params are defined by ahk/windows.
     ShellCallback(wParam, lParam) {
         ; According to the docs, these 4 params should work. In reality,
