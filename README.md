@@ -26,6 +26,11 @@ Adds two global objects to script:
 * WindowChangeDetector object declaration
 * Debug_Gui object declaration
 
+[Causes the including script to become](https://www.autohotkey.com/docs/commands/OnMessage.htm#Remarks):
+
+* persistent
+* single-instance
+
 # Known limitations
 
 Code run by the callback does not have access to the instance variables, so using the debugging window fails. Use a msgbox to confirm the callback works.
