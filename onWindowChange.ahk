@@ -1,14 +1,17 @@
-    ; Sets hWnd, needed for sendmessage.
-    Gui +HwndhWnd
 class WindowChangeDetector {
-    static windowChangehWnd:=hWnd
 
     __New(callbackFunction, debug=True)
     {
         this.callbackFunction := callbackFunction
+        ; Sets hWnd, needed for sendmessage.
+        msgbox %hWnd%
+        Gui +HwndhWnd
+        msgbox %hWnd%
+        this.windowChangehWnd := hWnd
         ; this.debug := debug
         if (debug){
             this.makeDebugGui()
+            this.debug("Initiated debugger")
         }
 
         ; Get the dynamic identifier for shell messages and assign our callback to handle these messages
