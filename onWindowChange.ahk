@@ -10,9 +10,7 @@ class WindowChangeDetector {
             this.debug("Initiated debugger")
         }
 
-        ; Get the dynamic identifier for shell messages and assign our callback to handle these messages
-        static SHELL_MSG := DllCall("RegisterWindowMessage", "Str", "SHELLHOOK", "UInt")
-        OnMessage(SHELL_MSG, Func("this.ShellCallback"))
+        this.initMessageReceivedCallback()
 
         this.SetHook()
 
@@ -25,6 +23,14 @@ class WindowChangeDetector {
         ; A window handle is needed for sendmessage. Windows needs to a window
         ; to send message to, not just a process.
         this.windowHandle := hWnd
+    }
+
+    initMessageReceivedCallback(){
+        ; Get the dynamic identifier for shell messages and assign our callback to handle these messages
+        static SHELL_MSG := DllCall("RegisterWindowMessage", "Str", "SHELLHOOK", "UInt")
+        func := this.ShellCallback
+        OnMessage(SHELL_MSG, Func(func))
+        this.debug("Registered message callback func '" . func . "'")
     }
 
     makeDebugGui(){
@@ -40,13 +46,13 @@ class WindowChangeDetector {
         }
         this.debug("Registered shell hook for window handle '" . this.windowHandle . "'")
     }
-    ; Shell messages callback
-    ShellCallback(wParam, lParam) {
-        ; HSHELL_WINDOWACTIVATED = 4, HSHELL_RUDEAPPACTIVATED = 0x8004
+    ; Shell messages callback. The params are defined by ahk/windows.
+    ShellCallback(wParam, lParam, msg, hwnd) {
+        HSHELL_WINDOWACTIVATED = 4, HSHELL_RUDEAPPACTIVATED = 0x8004
         ; tooltip % wParam " " (wParam & 4)
         ; msgbox % wParam " " (wParam & 4)
         this.debug("wParam: " wParam ",(wParam & 4): " (wParam & 4))
-        if (wParam & 4) {
+        if (wParam & HSHELL_WINDOWACTIVATED) {
             ; lParam = hWnd of activated window
             this.informCallbackOfWindowChange()
         }
