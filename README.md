@@ -21,6 +21,11 @@ msgboxActiveWindow(){
 }
 ```
 
+Adds two global objects to script:
+
+* WindowChangeDetector object declaration
+* Debug_Gui object declaration
+
 # Known limitations
 
 Code run by the callback does not have access to the instance variables, so using the debugging window fails. Use a msgbox to confirm the callback works.
