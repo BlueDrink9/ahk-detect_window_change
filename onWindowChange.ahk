@@ -3,11 +3,7 @@ class WindowChangeDetector {
     __New(callbackFunction, debug=True)
     {
         this.callbackFunction := callbackFunction
-        ; Sets hWnd, needed for sendmessage.
-        msgbox %hWnd%
-        Gui +HwndhWnd
-        msgbox %hWnd%
-        this.windowChangehWnd := hWnd
+        this.initMessageAddress()
         ; this.debug := debug
         if (debug){
             this.makeDebugGui()
@@ -23,6 +19,15 @@ class WindowChangeDetector {
         return this  ; This line can be omitted when using the 'new' operator.
     }
 
+    initMessageAddress(){
+        ; Sets hWnd
+        Gui +HwndhWnd
+        msgbox %hWnd%
+        ; A window handle is needed for sendmessage. Windows needs to a window
+        ; to send message to, not just a process.
+        this.windowHandle := hWnd
+    }
+
     makeDebugGui(){
         Debug_Gui.debug:=this.debug
         this.debugWindow := new Debug_Gui
@@ -30,10 +35,11 @@ class WindowChangeDetector {
 
     ; Sets whether the shell hook is registered
     SetHook() {
-        if (!DllCall("RegisterShellHookWindow", "Ptr", this.windowChangehWnd)) {
+        if (!DllCall("RegisterShellHookWindow", "Ptr", this.windowHandle)) {
             msgbox Failed to register shell hook for detecting window change
             return false
         }
+        this.debug("Registered shell hook for window handle '" . this.windowHandle . "'")
     }
     ; Shell messages callback
     ShellCallback(wParam, lParam) {
