@@ -1,7 +1,10 @@
+
+global ChangeDetector
 class WindowChangeDetector {
 
     __New(callbackFunction, debug=True)
     {
+        global ChangeDetector
         this.callbackFunction := callbackFunction
         this.initMessageAddress()
         ; this.debug := debug
@@ -14,6 +17,7 @@ class WindowChangeDetector {
 
         this.registerShellHook()
 
+        ChangeDetector := this
         return this  ; This line can be omitted when using the 'new' operator.
     }
 
@@ -53,12 +57,16 @@ class WindowChangeDetector {
         ; registering a function with more than 3 arguments with OnMessage
         ; causes an error.
         ; (wParam, lParam, msg, hwnd)
+        ; lParam = hWnd of activated window
+        ; Callback function is its own object, so has its own 'this' which is
+        ; not the class 'this'. We manually fix it here.
+        this := ChangeDetector
         this.debug("wParam: " wParam ",(wParam & 4): " (wParam & 4))
 
-        HSHELL_WINDOWACTIVATED = 4, HSHELL_RUDEAPPACTIVATED = 0x8004
+        HSHELL_WINDOWACTIVATED := 0x0004, HSHELL_RUDEAPPACTIVATED := 0x8004
         isWindowChangeEvent := wParam & HSHELL_WINDOWACTIVATED
+
         if (isWindowChangeEvent) {
-            ; lParam = hWnd of activated window
             this.informCallbackOfWindowChange()
         }
     }

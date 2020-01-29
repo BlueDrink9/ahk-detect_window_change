@@ -2,7 +2,7 @@ Adapted from [Josh Brobst](https://stackoverflow.com/a/49662680) on Stack Overfl
 
 # Usage
 
-1. `#include` this script. This creates two object declarations, WindowChangeDetector and Debug_Gui.
+1. `#include` this script. This creates two object declarations, WindowChangeDetector and Debug_Gui, and one super global variable, ChangeDetector.
 2. Create a new instance of a WindowChangeDetector. This takes two parameters:
     1. A declared AHK function that will be the callback for when a window changes
     2. An optional boolean `debug` that controls whether a window will be created for logging debug messages.
@@ -21,10 +21,11 @@ msgboxActiveWindow(){
 }
 ```
 
-Adds two global objects to script:
+Adds three global objects to script:
 
-* WindowChangeDetector object declaration
-* Debug_Gui object declaration
+* `WindowChangeDetector` object declaration
+* `Debug_Gui` object declaration
+* `ChangeDetector` superglobal object (available to all functions by default, can be overridden).
 
 [Causes the including script to become](https://www.autohotkey.com/docs/commands/OnMessage.htm#Remarks):
 
